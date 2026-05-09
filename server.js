@@ -32,6 +32,7 @@ app.use("/api/payslips", paySlipRouter);
 app.use("/api/dashboard", dashboardRouter);
 
 await connectDb();
+
 app.listen(PORT, () => {
   console.log(`serever is running on ${PORT}`);
 });
