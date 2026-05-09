@@ -9,6 +9,7 @@ import profileRouter from "./routes/profileRoute.js";
 import attendanceRouter from "./routes/attendanceRoute.js";
 import leaveRouter from "./routes/leaveroute.js";
 import paySlipRouter from "./routes/Paysliproute.js";
+import dashboardRouter from "./routes/dasBoardRoute.js";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -28,8 +29,9 @@ app.use("/api/profile", profileRouter);
 app.use("/api/attendance", attendanceRouter);
 app.use("/api/leave", leaveRouter);
 app.use("/api/payslips", paySlipRouter);
+app.use("/api/dashboard", dashboardRouter);
 
 await connectDb();
 app.listen(PORT, () => {
-  console.log(`serever is runnong on ${PORT}`);
+  console.log(`serever is running on ${PORT}`);
 });
