@@ -1,5 +1,5 @@
-import Employee from "../models/Employee";
-import LeaveApplication from "../models/LeaveApplication";
+import Employee from "../models/Employee.js";
+import LeaveApplication from "../models/LeaveApplication.js";
 
 export const createLeave = async (req, res) => {
   try {
