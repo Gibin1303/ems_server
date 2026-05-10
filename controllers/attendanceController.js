@@ -1,3 +1,4 @@
+import { inngest } from "../inngest/index.js";
 import Attendance from "../models/Attendance.js";
 import Employee from "../models/Employee.js";
 
@@ -28,6 +29,11 @@ export const clockInOut = async (req, res) => {
         date: today,
         checkIn: now,
         status: isLate ? "LATE" : "PRESENT",
+      });
+
+      await inngest.send({
+        name: "employee/check-out",
+        data: { employeeId: employee._id, attendanceId: attendance._id },
       });
       return res.json({ success: true, type: "CHECK_IN", data: attendance });
     } else if (!existing.checkOut) {
@@ -66,10 +72,14 @@ export const getAttendance = async (req, res) => {
     }
 
     const limit = parseInt(req.query.limit || 30);
-    const history = await Attendance.findById({ employeeId: employee._id }).sort({date:-1}).limit(limit);
-    return res.json({data:history, employee:{isDeleted:employee.isDeleted}})
-  } 
-  catch (error) {
+    const history = await Attendance.findById({ employeeId: employee._id })
+      .sort({ date: -1 })
+      .limit(limit);
+    return res.json({
+      data: history,
+      employee: { isDeleted: employee.isDeleted },
+    });
+  } catch (error) {
     return res.status(500).json({ error: "Operation failed" });
   }
 };

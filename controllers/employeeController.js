@@ -13,7 +13,7 @@ export const getEmployees = async (req, res) => {
     if (department) where.department = department;
 
     const employees = (await Employee.find(where))
-      .toSorted({ createdAt: -1 })
+      .sort({ createdAt: -1 })
       .populate("userId", "email role")
       .lean();
 
