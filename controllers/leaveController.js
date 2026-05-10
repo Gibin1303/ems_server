@@ -47,7 +47,7 @@ export const createLeave = async (req, res) => {
     });
 
     await inngest.send({
-      nameL: "leave/pending",
+      name: "leave/pending",
       leaveApplicationId: leave._id,
     });
 

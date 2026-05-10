@@ -12,7 +12,7 @@ const transporter = createTransport({
 
 
 
- const sendEmail=({to, subject, body})=>{
+ const sendEmail= async({to, subject, body})=>{
     const response = await transporter.sendMail({
         from: process.env.SENDER_EMAIL,
         to,
