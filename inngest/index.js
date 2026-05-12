@@ -167,7 +167,7 @@ const attendanceReminderCron = inngest.createFunction(
     const today = await step.run("get-today-date", () => {
       const startUtc = new Date(
         new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }) +
-          "T00:00:00 + 05:30",
+          "T00:00:00+05:30",
       );
 
       const endUtc = new Date(startUtc.getTime() + 24 * 60 * 60 * 1000);
@@ -224,6 +224,8 @@ const attendanceReminderCron = inngest.createFunction(
                 <p style="font-size: 16px; margin-bottom: 0;"> Best Regards, </p> <p style=" font-size: 16px; font-weight: bold; margin-top: 4px; "> EMS </p> </div> `,
           });
         });
+            await Promise.all(emailPromises);
+
       });
     }
 

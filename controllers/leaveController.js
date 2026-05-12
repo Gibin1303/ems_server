@@ -12,7 +12,7 @@ export const createLeave = async (req, res) => {
     if (employee.isDeleted) {
       return rex.status(404).json({
         error:
-          "you are not allowed for create leave, Your accont is deactivated",
+          "you are not allowed for create leave, Your account is deactivated",
       });
     }
 
@@ -86,7 +86,7 @@ export const getLeaves = async (req, res) => {
         return res.status(404).json({ error: "Not found" });
       }
 
-      const leaves = await LeaveApplication.findOne({
+      const leaves = await LeaveApplication.find({
         employeeId: employee._id,
       }).sort({ createdAt: -1 });
       return res.json({
@@ -100,7 +100,7 @@ export const getLeaves = async (req, res) => {
   }
 };
 
-export const updateLeaveStatus = async () => {
+export const updateLeaveStatus = async (req, res) => {
   try {
     const { status } = req.body;
     if (!["APPROVED", "REJECTED", "PENDING"].includes(status)) {

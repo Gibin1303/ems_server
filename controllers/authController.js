@@ -18,7 +18,11 @@ export const login = async (req, res) => {
       return res.status(401).json({ error: "not authorized as admin" });
     }
 
-    return res.status(401).json({ error: "not authorized as employee" });
+      if (role_type === "employee" && user.role !== "EMPLOYEE") {
+            return res.status(401).json({ error: "not authorized as employee" });
+
+    }
+
 
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
@@ -31,7 +35,7 @@ export const login = async (req, res) => {
       email: user.email,
     };
 
-    const token = jwt.sign(payLoad, JWT_SECRET, { expiresIn: "7d" });
+    const token = jwt.sign(payLoad, process.env.JWT_SECRET, { expiresIn: "7d" });
 
     return res.status(200).json({ user: payLoad, token });
   } catch (error) {

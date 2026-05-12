@@ -47,24 +47,25 @@ export const getPayslip = async (req, res) => {
       });
       return res.json({ data });
     } else {
-      const employee = await Employee.find({ userId: session.userId });
+      const employee = await Employee.findOne({ userId: session.userId });
       if (!employee) {
         return res.status(404).json({ error: "Not found" });
       }
-      const paySlips = (
-        await PaySlip.find({ employeeId: employee._id })
-      ).toSorted({ createdAt: -1 });
-      return res.json({ data: paySlip });
+      const paySlips = await PaySlip.find({ employeeId: employee._id }).sort({
+        createdAt: -1,
+      });
+      return res.json({ data: paySlips });
     }
   } catch (error) {
+    console.log(error);
     return res.json({ error: "Failed" });
   }
 };
 
 export const getPayslipById = async (req, res) => {
   try {
-    const paySlip = await PaySlip.findOne(req.params.id)
-      .populate(employeeId)
+    const paySlip = await PaySlip.findById(req.params.id)
+      .populate("employeeId")
       .lean();
     if (!paySlip) {
       return res.status(404).json({ error: "Not Found" });
@@ -77,7 +78,7 @@ export const getPayslipById = async (req, res) => {
       // employeeId: paySlip.employeeId?._id.toString(),
     };
 
-    return res.json(result)
+    return res.json(result);
   } catch (error) {
     return res.json({ error: "Failed" });
   }

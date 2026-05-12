@@ -27,38 +27,39 @@ export const getDashBoard = async (req, res) => {
         pendingLeaves,
       });
     } else {
-      const employee = await Employee.findOne({ employeeId: session.userId });
+      const employee = await Employee.findOne({ userId: session.userId }).lean();
       if (!employee)
         return res.status(404).json({ error: "Employee not found" });
+      const today = new Date();
+      const [currentMonthAttendance, pendingLeaves, latestPayslips] =
+        await Promise.all([
+          Attendance.countDocuments({
+            employeeId: employee._id,
+            date: {
+              $gte: new Date(today.getFullYear(), today.getMonth(), 1),
+              $lt: new Date(today.getFullYear(), today.getMonth(), +1, 1),
+            },
+          }),
+          LeaveApplication.countDocuments({
+            employeeId: employee._id,
+            status: "PENDING",
+          }),
+          PaySlip.findOne({ employeeId: employee._id })
+            .sort({
+              createdAt: -1,
+            })
+            .lean(),
+        ]);
+      return res.json({
+        role: "EMPLOYEE",
+        employee: { ...employee, id: employee._id.toString() },
+        currentMonthAttendance,
+        pendingLeaves,
+        latestPayslips: latestPayslips
+          ? { ...latestPayslips, id: latestPayslips._id.toString() }
+          : null,
+      });
     }
-    const today = new Date();
-    const [currentMonthAttendance, pendingLeaves, latestPayslips] =
-      await Promise.all([
-        Attendance.countDocuments({
-          employeeId: employee._id,
-          date: {
-            $gte: new Date(today.getFullYear(), today.getMonth(), 1),
-            $lt: new Date(today.getFullYear(), today.getMonth(), +1, 1),
-          },
-        }).LeaveApplication.countDocuments({
-          employeeId: employee._id,
-          status: "PENDING",
-        }),
-        PaySlip.findOne({ employeeId: employee._id })
-          .sort({
-            createdAt: -1,
-          })
-          .lean(),
-      ]);
-    return res.json({
-      role: "EMPLOYEE",
-      employee: { ...employee, id: employee._id.toString() },
-      currentMonthAttendance,
-      pendingLeaves,
-      latestPayslips: latestPayslips
-        ? { ...latestPayslips, id: latestPayslips._id.toString() }
-        : null,
-    });
   } catch (error) {
     console.log("dashboard error", error);
     return res.status(500).json({ error: "Failed" });
